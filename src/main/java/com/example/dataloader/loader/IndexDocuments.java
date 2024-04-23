@@ -24,6 +24,7 @@ public class IndexDocuments {
     }
 
     void load(Path folderPath){
+        LOGGER.info("Using vector store: {} to index and store documents. \n", vectorStore.getClass().getSimpleName());
         LOGGER.info("indexing documents");
         PagePdfDocumentReader pdfReader = new PagePdfDocumentReader(
                 folderPath.toUri().toString(),

@@ -15,5 +15,8 @@ spring:
         options:
           temperature: 0.2
           model: gpt-3.5-turbo
+    vectorstore:
+      pgvector:
+        remove-existing-vector-store-table: true
   main:
     web-application-type: NONE

@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,9 +55,12 @@ public class CLIEntry {
     }
 
     private void processDirectory(Path folderPath) throws IOException {
-        LOGGER.info("Found {} files in the directory. Indexing each file separately. \n", Files.list(folderPath).count());
-        Files.list(folderPath)
-        .forEach(path -> loadDocuments(path));
+        try(Stream<Path> pathStream = Files.list(folderPath)){
+            final var files = pathStream.toList();
+            LOGGER.info("Found {} files in the directory. Indexing each file separately. \n", files.size());
+            files.forEach(this::loadDocuments);
+        }
+        
     }
 
     private void loadDocuments(Path folderPath) {

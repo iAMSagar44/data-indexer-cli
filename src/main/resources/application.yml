@@ -20,3 +20,11 @@ spring:
         remove-existing-vector-store-table: true
   main:
     web-application-type: NONE
+  
+  cloud:
+    azure:
+      storage:
+        blob:
+          account-name: ${AZURE_STORAGE_ACCOUNT}
+          container-name: ${STORAGE_CONTAINER_NAME}
+          blob-name: AZ-exam-2.pdf

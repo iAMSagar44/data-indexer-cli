@@ -17,10 +17,12 @@ public class CLIEntry {
     private static final Logger LOGGER = LoggerFactory.getLogger(CLIEntry.class);
     private final IndexDocuments indexDocuments;
     private final JdbcClient jdbcClient;
+    private final BlobUpload blobUpload;
 
-    public CLIEntry(IndexDocuments indexDocuments, JdbcClient jdbcClient) {
+    public CLIEntry(IndexDocuments indexDocuments, JdbcClient jdbcClient, BlobUpload blobUpload) {
         this.indexDocuments = indexDocuments;
         this.jdbcClient = jdbcClient;
+        this.blobUpload = blobUpload;
     }
 
     @Command(command = "load", description = "Index documents to the Vector Store")
@@ -30,6 +32,15 @@ public class CLIEntry {
         Path folderPath = Path.of(path);
         LOGGER.info("Loading documents from the path {}", folderPath.toAbsolutePath());
         validateFolderPath(folderPath);
+    }
+
+    @Command(command = "blob", description = "Load documents to an Azure Blob Storage")
+    public void loadToAzureBlobStorage(
+            @Option(longNames = "path", shortNames = 'p', required = true, label = "the path of the directory or file") String path)
+            throws IOException {
+        Path folderPath = Path.of(path);
+        LOGGER.info("Uploading documents from the path {}", folderPath.toUri().toString());
+        blobUpload.uploadFile(path);
     }
 
     @Command(command = "delete", description = "Deletes all the documents from the Vector Store")

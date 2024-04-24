@@ -31,7 +31,7 @@ public class CLIEntry {
             throws IOException {
         Path folderPath = Path.of(path);
         LOGGER.info("Loading documents from the path {}", folderPath.toAbsolutePath());
-        validateFolderPath(folderPath);
+        validateFolderPath(folderPath, false);
     }
 
     @Command(command = "blob", description = "Load documents to an Azure Blob Storage")
@@ -39,8 +39,8 @@ public class CLIEntry {
             @Option(longNames = "path", shortNames = 'p', required = true, label = "the path of the directory or file") String path)
             throws IOException {
         Path folderPath = Path.of(path);
-        LOGGER.info("Uploading documents from the path {}", folderPath.toUri().toString());
-        blobUpload.uploadFile(path);
+        LOGGER.info("Uploading documents from the path {}", folderPath.toUri());
+        validateFolderPath(folderPath, true);
     }
 
     @Command(command = "delete", description = "Deletes all the documents from the Vector Store")
@@ -50,14 +50,13 @@ public class CLIEntry {
         jdbcClient.sql("DELETE FROM vector_store").update();
     }
 
-    private void validateFolderPath(Path folderPath) throws IOException {
+    private void validateFolderPath(Path folderPath, boolean uploadToBlob) throws IOException {
         if (Files.isDirectory(folderPath)) {
             LOGGER.info("The path provided is a directory");
-            processDirectory(folderPath);
+            processDirectory(folderPath, uploadToBlob);
         } else {
             if (Files.exists(folderPath)) {
-                LOGGER.info("The File path is {}", folderPath.toUri().toString());
-                loadDocuments(folderPath);
+                loadDocuments(folderPath, uploadToBlob);
             } else {
                 throw new FileNotFoundException(
                         String.format("The file path provided does not exist. File Path %s", folderPath.toString()));
@@ -65,17 +64,21 @@ public class CLIEntry {
         }
     }
 
-    private void processDirectory(Path folderPath) throws IOException {
+    private void processDirectory(Path folderPath, boolean uploadToBlob) throws IOException {
         try(Stream<Path> pathStream = Files.list(folderPath)){
             final var files = pathStream.toList();
             LOGGER.info("Found {} files in the directory. Indexing each file separately. \n", files.size());
-            files.forEach(this::loadDocuments);
+            files.forEach(file -> loadDocuments(file, uploadToBlob));
         }
         
     }
 
-    private void loadDocuments(Path folderPath) {
+    private void loadDocuments(Path folderPath, boolean uploadToBlob) {
         LOGGER.info("Processing file {}", folderPath.getFileName().toString());
-        indexDocuments.load(folderPath);
+        if (uploadToBlob) {
+            this.blobUpload.uploadFile(folderPath.toString());
+        } else {
+            indexDocuments.load(folderPath);
+        }
     }
 }

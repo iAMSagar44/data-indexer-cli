@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.command.annotation.Option;
 
-@Command(command = "qdrant", description = "CLI for interacting with a Qdrant Vector Store")
+@Command(command = "qdrant", description = "CLI for interacting with a Qdrant Vector Store", group = "Application Commands")
 public class CLIEntry {
     private static final Logger LOGGER = LoggerFactory.getLogger(CLIEntry.class);
     private final IndexDocuments indexDocuments;

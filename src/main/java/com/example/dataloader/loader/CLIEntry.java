@@ -4,6 +4,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.stream.Stream;
 
 import io.qdrant.client.QdrantClient;
@@ -46,6 +47,9 @@ public class CLIEntry {
     public String deleteCollection(
             @Option(longNames = "collection", shortNames = 'c', required = true, label = "the collection to delete") String name) {
         try {
+            if (!isCollectionExists(name)) {
+                return String.format("The collection %s does not exist", name);
+            }
             final var result = this.qdrantClient.deleteCollectionAsync(name).get().getResult();
             if (result) {
                 return String.format("Successfully deleted the collection %s", name);
@@ -85,5 +89,13 @@ public class CLIEntry {
     private void loadDocuments(Path folderPath) {
         LOGGER.info("Processing file {}", folderPath.getFileName().toString());
             indexDocuments.load(folderPath);
+    }
+
+    private boolean isCollectionExists(String collectionName) {
+        try {
+            return ((List)this.qdrantClient.listCollectionsAsync().get()).stream().anyMatch((c) -> c.equals(collectionName));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

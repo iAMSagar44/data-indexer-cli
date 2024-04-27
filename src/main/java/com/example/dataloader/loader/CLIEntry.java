@@ -6,18 +6,21 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.stream.Stream;
 
+import io.qdrant.client.QdrantClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.command.annotation.Option;
 
-@Command(command = "data")
+@Command(command = "qdrant", description = "CLI for interacting with a Qdrant Vector Store")
 public class CLIEntry {
     private static final Logger LOGGER = LoggerFactory.getLogger(CLIEntry.class);
     private final IndexDocuments indexDocuments;
+    private final QdrantClient qdrantClient;
 
-    public CLIEntry(IndexDocuments indexDocuments) {
+    public CLIEntry(IndexDocuments indexDocuments, QdrantClient qdrantClient) {
         this.indexDocuments = indexDocuments;
+        this.qdrantClient = qdrantClient;
     }
 
     @Command(command = "load", description = "Index documents to the Vector Store")
@@ -27,6 +30,33 @@ public class CLIEntry {
         Path folderPath = Path.of(path);
         LOGGER.info("Loading documents from the path {}", folderPath.toAbsolutePath());
         validateFolderPath(folderPath);
+    }
+
+    @Command(command = "list", description = "List existing collections in Qdrant Vector Store")
+    public String listCollections(){
+        try {
+            return String.join(", ", this.qdrantClient.listCollectionsAsync().get());
+        } catch (Exception e) {
+            LOGGER.error("Error occurred while listing collections {}", e.getLocalizedMessage());
+            return "Error occurred while listing collections";
+        }
+    }
+
+    @Command(command = "delete", description = "Delete a collection from Qdrant Vector Store")
+    public String deleteCollection(
+            @Option(longNames = "collection", shortNames = 'c', required = true, label = "the collection to delete") String name) {
+        try {
+            final var result = this.qdrantClient.deleteCollectionAsync(name).get().getResult();
+            if (result) {
+                return String.format("Successfully deleted the collection %s", name);
+            } else {
+                LOGGER.error("Error occurred while deleting the collection {}.", name);
+                return String.format("There was an error while deleting the collection %s", name);
+            }
+        } catch (Exception e) {
+            LOGGER.error("Error occurred while deleting the collection {}. Error - {}", name, e.getLocalizedMessage());
+            return String.format("There was an error while deleting the collection %s", name);
+        }
     }
 
     private void validateFolderPath(Path folderPath) throws IOException {

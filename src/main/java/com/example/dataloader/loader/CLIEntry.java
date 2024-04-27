@@ -8,7 +8,6 @@ import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.shell.command.annotation.Command;
 import org.springframework.shell.command.annotation.Option;
 
@@ -16,11 +15,9 @@ import org.springframework.shell.command.annotation.Option;
 public class CLIEntry {
     private static final Logger LOGGER = LoggerFactory.getLogger(CLIEntry.class);
     private final IndexDocuments indexDocuments;
-    private final JdbcClient jdbcClient;
 
-    public CLIEntry(IndexDocuments indexDocuments, JdbcClient jdbcClient) {
+    public CLIEntry(IndexDocuments indexDocuments) {
         this.indexDocuments = indexDocuments;
-        this.jdbcClient = jdbcClient;
     }
 
     @Command(command = "load", description = "Index documents to the Vector Store")
@@ -30,13 +27,6 @@ public class CLIEntry {
         Path folderPath = Path.of(path);
         LOGGER.info("Loading documents from the path {}", folderPath.toAbsolutePath());
         validateFolderPath(folderPath);
-    }
-
-    @Command(command = "delete", description = "Deletes all the documents from the Vector Store")
-    public void deleteAllData()
-            throws IOException {
-        LOGGER.info("Deleting all documents from the Vector Store");
-        jdbcClient.sql("DELETE FROM vector_store").update();
     }
 
     private void validateFolderPath(Path folderPath) throws IOException {

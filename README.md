@@ -1,6 +1,6 @@
 # Document Indexer Application
 
-A CLI application to interact with a Qdrant Vector Store.
+A CLI application to interact with an Azure AI Search resource.
 
 ## Technologies Used
 
@@ -8,13 +8,13 @@ A CLI application to interact with a Qdrant Vector Store.
 - Spring Boot 3.2.5
 - Maven
 - OpenAI
-- Qdrant Vector Store
+- Azure AI Search
 
 ## Dependencies
 
 - Spring AI OpenAI Spring Boot Starter
 - Spring AI PDF Document Reader
-- Spring AI Qdrant Store Spring Boot Starter
+- Spring AI Azure AI Search Spring Boot Starter
 - Spring Shell Starter
 - Spring Boot Starter Web
 - Spring Boot Devtools (optional)
@@ -24,18 +24,16 @@ A CLI application to interact with a Qdrant Vector Store.
 
 Before running the application, you need to set the following environment variables:
 
-- `QDRANT_COLLECTION_NAME`: The name of the Qdrant collection.
-- `QDRANT_HOST`: The host address of the Qdrant service.
-- `QDRANT_API_KEY`: The API key for the Qdrant service.
+- `AZURE_AI_SEARCH_ENDPOINT`: The endpoint of the Azure AI Search resource.
+- `AZURE_AI_SEARCH_API_KEY`: The primary or the secondary key of the Azure AI Search resource.
 - `SPRING_AI_OPENAI_API_KEY`: The API key for the Spring AI OpenAI service.
 
 You can set these environment variables in your terminal as follows:
 
 ```bash
-export QDRANT_COLLECTION_NAME=your_collection_name
-export QDRANT_HOST=your_qdrant_host
-export QDRANT_API_KEY=your_qdrant_api_key
-export SPRING_AI_OPENAI_API_KEY=your_spring_ai_openai_api_key
+export AZURE_AI_SEARCH_ENDPOINT=your_Azure_AI_SEARCH_endpoint
+export AZURE_AI_SEARCH_API_KEY=your_Azure_AI_SEARCH_api_key
+export SPRING_AI_OPENAI_API_KEY=your_Spring_AI_OpenAI_api_key
 ```
 
 ## Building the Project
@@ -59,9 +57,10 @@ shell:>help
 AVAILABLE COMMANDS
 
 Application Commands
-       qdrant delete: Delete a collection from Qdrant Vector Store
-       qdrant list: List existing collections in Qdrant Vector Store
-       qdrant load: Index documents to the Vector Store
+       azais load: Index documents to the Vector Store
+       azais list: List existing index names in the Azure AI Search instance
+       azais create: Create an index in the Azure AI Search instance
+       azais delete: Delete an index from the Azure AI Search instance
 
 Built-In Commands
        help: Display help about available commands
@@ -76,18 +75,21 @@ You can know more about what each command does by typing ```help <command_name>`
 
 Example - 
 ```
-shell:>qdrant load -h
+shell:>azais load -h
 NAME
-       qdrant load - Index documents to the Vector Store
+       azais load - Index documents to the Vector Store
 
 SYNOPSIS
-       qdrant load [--path the path of the directory or file] --help
+       azais load [--path the path of the directory or file] [--index the index name to load the documents] --help
 
 OPTIONS
        --path or -p the path of the directory or file
        [Mandatory]
 
+       --index or -i the index name to load the documents
+       [Mandatory]
+
        --help or -h
-       help for qdrant load
+       help for azais load
        [Optional]
 ```

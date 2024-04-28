@@ -4,7 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.shell.command.annotation.CommandScan;
 
-@SpringBootApplication
+@SpringBootApplication(exclude = {org.springframework.ai.autoconfigure.vectorstore.azure.AzureVectorStoreAutoConfiguration.class})
 @CommandScan
 public class DataLoaderApplication {
 

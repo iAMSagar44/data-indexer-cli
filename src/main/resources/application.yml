@@ -11,12 +11,9 @@ spring:
         options:
           temperature: 0.2
           model: gpt-3.5-turbo
-    vectorstore:
-      qdrant:
-        api-key: ${QDRANT_API_KEY}
-        host: ${QDRANT_HOST}
-        collection-name: ${QDRANT_COLLECTION_NAME}
-        use-tls: true
-        port: 6334
   main:
     web-application-type: NONE
+azure:
+  aisearch:
+    api-key: ${AZURE_AI_SEARCH_API_KEY}
+    url: ${AZURE_AI_SEARCH_ENDPOINT}

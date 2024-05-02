@@ -26,11 +26,12 @@ public class CLIEntry {
 
     @Command(command = "load", description = "Index documents to the Vector Store")
     public void loadData(
-            @Option(longNames = "path", shortNames = 'p', required = true, label = "the path of the directory or file") String path)
+            @Option(longNames = "path", shortNames = 'p', required = true, label = "the path of the directory or file") String path,
+            @Option(longNames = "paragraph", shortNames = 'g', defaultValue = "false", label = "read by paragraphs instead of pages (for PDF documents)") boolean readByParagraph)
             throws IOException {
         Path folderPath = Path.of(path);
         LOGGER.info("Loading documents from the path {}", folderPath.toAbsolutePath());
-        validateFolderPath(folderPath);
+        validateFolderPath(folderPath, readByParagraph);
     }
 
     @Command(command = "list", description = "List existing collections in Qdrant Vector Store")
@@ -63,13 +64,13 @@ public class CLIEntry {
         }
     }
 
-    private void validateFolderPath(Path folderPath) throws IOException {
+    private void validateFolderPath(Path folderPath, boolean readByParagraph) throws IOException {
         if (Files.isDirectory(folderPath)) {
             LOGGER.info("The path provided is a directory");
-            processDirectory(folderPath);
+            processDirectory(folderPath, readByParagraph);
         } else {
             if (Files.exists(folderPath)) {
-                loadDocuments(folderPath);
+                loadDocuments(folderPath, readByParagraph);
             } else {
                 throw new FileNotFoundException(
                         String.format("The file path provided does not exist. File Path %s", folderPath.toString()));
@@ -77,18 +78,18 @@ public class CLIEntry {
         }
     }
 
-    private void processDirectory(Path folderPath) throws IOException {
+    private void processDirectory(Path folderPath, boolean readByParagraph) throws IOException {
         try(Stream<Path> pathStream = Files.list(folderPath)){
             final var files = pathStream.toList();
             LOGGER.info("Found {} files in the directory. Indexing each file separately. \n", files.size());
-            files.forEach(this::loadDocuments);
+            files.forEach(file -> loadDocuments(file, readByParagraph));
         }
         
     }
 
-    private void loadDocuments(Path folderPath) {
+    private void loadDocuments(Path folderPath, boolean readByParagraph){
         LOGGER.info("Processing file {}", folderPath.getFileName().toString());
-            indexDocuments.load(folderPath);
+            indexDocuments.load(folderPath, readByParagraph);
     }
 
     private boolean isCollectionExists(String collectionName) {

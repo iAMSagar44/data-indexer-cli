@@ -23,7 +23,7 @@ variable "sku" {
     condition     = contains(["free", "basic"], var.sku)
     error_message = "The sku must be one of the following values for PoC purposes: free or basic"
   }
-  default = "basic"
+  default = "free"
 }
 
 variable "replica_count" {

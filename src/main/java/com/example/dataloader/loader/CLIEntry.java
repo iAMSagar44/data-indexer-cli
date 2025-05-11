@@ -64,6 +64,11 @@ public class CLIEntry {
 
     private void loadDocuments(Path folderPath) {
         LOGGER.info("Processing file {}", folderPath.getFileName().toString());
-        indexDocuments.load(folderPath);
+        try {
+            indexDocuments.load(folderPath);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 }

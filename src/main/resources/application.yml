@@ -1,22 +1,22 @@
 spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: postgres
+    password: postgres
   ai:
     openai:
-      api-key: ${SPRING_AI_OPENAI_API_KEY}
-      embedding-api-key: ${SPRING_AI_OPENAI_API_KEY}
+      api-key: ${OPENAI_API_KEY}
       embedding:
         options:
           model: text-embedding-ada-002
-      base-url: https://api.openai.com/
-      chat:
-        options:
-          temperature: 0.2
-          model: gpt-3.5-turbo
     vectorstore:
-      qdrant:
-        api-key: ${QDRANT_API_KEY}
-        host: ${QDRANT_HOST}
-        collection-name: ${QDRANT_COLLECTION_NAME}
-        use-tls: true
-        port: 6334
+      pgvector:
+        # initialize-schema: true
+        schema-validation: true
+  shell:
+    interactive:
+      enabled: true
+    script:
+      enabled: true
   main:
     web-application-type: NONE

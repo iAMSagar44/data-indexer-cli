@@ -1,18 +1,15 @@
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
-    username: postgres
-    password: postgres
   ai:
     openai:
       api-key: ${OPENAI_API_KEY}
       embedding:
         options:
-          model: text-embedding-ada-002
+          model: text-embedding-3-large
     vectorstore:
-      pgvector:
-        # initialize-schema: true
-        schema-validation: true
+      azure:
+        url: ${SEARCH_ENDPOINT}
+        api-key: ${SEARCH_API_KEY}
+        initialize-schema: true
   shell:
     interactive:
       enabled: true
